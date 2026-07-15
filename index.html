@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>thrity.online — Download</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #2a2e38;
+    --text: #e6e6e6;
+    --muted: #9aa0ac;
+    --accent: #4dd0e1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+  main {
+    width: 100%;
+    max-width: 560px;
+  }
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.02em;
+  }
+  .tagline {
+    color: var(--muted);
+    margin: 0 0 32px 0;
+  }
+  .tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .tag {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.8rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .download-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #05171a;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    margin-bottom: 32px;
+  }
+  .download-btn:hover {
+    opacity: 0.9;
+  }
+  h2 {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 32px 0 10px 0;
+  }
+  pre {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  footer {
+    margin-top: 40px;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  footer a { color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Thrity Network</h1>
+  <p class="tagline">A free, lightweight browser and network.</p>
+
+  <div class="tags">
+    <span class="tag">no ads</span>
+    <span class="tag">no tracking</span>
+    <span class="tag">no accounts</span>
+    <span class="tag">open source</span>
+  </div>
+
+  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network.tar.gz">
+    Download thrity-network.tar.gz
+  </a>
+
+  <h2>Install</h2>
+  <pre>tar -xzf thrity-network.tar.gz
+cd thrity-network
+bash setup.sh
+python3 browser/30web.py</pre>
+
+  <footer>
+    <a href="https://github.com/thford64-boop/thrity">Source code on GitHub</a>
+  </footer>
+</main>
+</body>
+</html>
