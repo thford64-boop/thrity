@@ -139,11 +139,11 @@
     <span class="tag">no accounts</span>
     <span class="tag">open source</span>
   </div>
-  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.02.tar.gz">
-    Download thrity-network0.02.tar.gz
+  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.03.tar.gz">
+    Download thrity-network0.03.tar.gz
   </a>
   <h2>Install</h2>
-  <pre>tar -xzf thrity-network0.02.tar.gz
+  <pre>tar -xzf thrity-network0.03.tar.gz
 cd thrity-network
 bash setup.sh
 python3 browser/30web.py</pre>
@@ -152,7 +152,22 @@ python3 browser/30web.py</pre>
 
   <div class="changelog-entry">
     <div class="row">
-      <span class="version">v0.02 <span class="latest">latest</span></span>
+      <span class="version">v0.03 <span class="latest">latest</span></span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.03.tar.gz">download</a>
+    </div>
+    <ul>
+      <li>Anonymize (Tor) is now per-tab, not browser-wide</li>
+      <li>Every tab fully isolated - separate cookies/login state per tab, not just no shared history</li>
+      <li>.thrity sites can now link to each other with thrity://name links, not just be typed in the address bar</li>
+      <li>New "Directory" button browses every site a registry knows about</li>
+      <li>Host server no longer exposes raw folder listings when a page is missing</li>
+      <li>Registry server now rate-limits registrations to slow down name-squatting scripts</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.02</span>
       <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.02.tar.gz">download</a>
     </div>
     <ul>
