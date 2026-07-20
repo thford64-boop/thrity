@@ -139,11 +139,11 @@
     <span class="tag">no accounts</span>
     <span class="tag">open source</span>
   </div>
-  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.03.tar.gz">
-    Download thrity-network0.03.tar.gz
+  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.04.tar.gz">
+    Download thrity-network0.04.tar.gz
   </a>
   <h2>Install</h2>
-  <pre>tar -xzf thrity-network0.03.tar.gz
+  <pre>tar -xzf thrity-network0.04.tar.gz
 cd thrity-network
 bash setup.sh
 python3 browser/30web.py</pre>
@@ -152,7 +152,23 @@ python3 browser/30web.py</pre>
 
   <div class="changelog-entry">
     <div class="row">
-      <span class="version">v0.03 <span class="latest">latest</span></span>
+      <span class="version">v0.04 <span class="latest">latest</span></span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.04.tar.gz">download</a>
+    </div>
+    <ul>
+      <li>Faster: registries are now queried in parallel instead of one-by-one, and resolved names are cached briefly, so page loads and clicking around a site are noticeably snappier</li>
+      <li>Faster: host server now gzip-compresses pages/CSS/JS on the wire and lets browsers cache static assets for a session</li>
+      <li>Fixes many sites that "didn't work": local storage and video playback (MediaSource) are back on, still wiped when a tab closes, plus a more standard browser identity so fewer sites wrongly block 30web as unsupported</li>
+      <li>A failed .thrity page load now automatically re-resolves and retries once instead of leaving you stuck if a site recently moved</li>
+      <li>Camera/mic/location access is now asked per-site with a prompt instead of silently blocked outright</li>
+      <li>More secure: registry server can run with --https to stop registration secrets from being sent in plain text</li>
+      <li>More secure: stricter validation on .thrity names everywhere (resolver, host server, registry), file writes to the registry are now atomic and race-safe, and lookups are rate-limited too, not just registrations</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.03</span>
       <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.03.tar.gz">download</a>
     </div>
     <ul>
