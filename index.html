@@ -139,11 +139,11 @@
     <span class="tag">no accounts</span>
     <span class="tag">open source</span>
   </div>
-  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.04.tar.gz">
-    Download thrity-network0.04.tar.gz
+  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.05.tar.gz">
+    Download thrity-network0.05.tar.gz
   </a>
   <h2>Install</h2>
-  <pre>tar -xzf thrity-network0.04.tar.gz
+  <pre>tar -xzf thrity-network0.05.tar.gz
 cd thrity-network
 bash setup.sh
 python3 browser/30web.py</pre>
@@ -152,7 +152,23 @@ python3 browser/30web.py</pre>
 
   <div class="changelog-entry">
     <div class="row">
-      <span class="version">v0.04 <span class="latest">latest</span></span>
+      <span class="version">v0.05 <span class="latest">latest</span></span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.05.tar.gz">download</a>
+    </div>
+    <ul>
+      <li>New: full developer platform — WebKit's built-in Web Inspector is back on (element/CSS/JS console/network/storage), plus a Thrity DevTools window with resolver debugging, page timing, a security panel, and an extensions panel</li>
+      <li>New: a complete extension system with a small sandboxed DSL (no Python execution, no filesystem/network access beyond what's explicitly permitted) — toolbar buttons, menus, panels, page scripts, and 6 browser events extensions can react to</li>
+      <li>New: permission system (ui, devtools, page_info, page_scripts, network, storage) — network access is restricted to the Thrity network only, storage is private and capped per extension, page scripts only load from the extension's own folder</li>
+      <li>New: 3 example extensions included and auto-installed by setup.sh — Developer Helper, Page Tools, Network Monitor — plus a headless CLI (`extensions/cli.py`) to validate and test extensions without launching the browser</li>
+      <li>Fixed: many .onion sites failing with "Internal SOCKSv5 proxy server error" — bare onion addresses now default to plain HTTP instead of forced HTTPS, self-signed onion certs are trusted the same way .thrity certs are, and failed loads on Tor-anonymized tabs now retry automatically since fresh-circuit failures are usually transient</li>
+      <li>Servers: host server gets a `/thrity-info` debug endpoint (uptime, requests served); registry server gets a `/status` endpoint (version, uptime, site/request counts); both support `--verbose` for full per-request timing logs</li>
+      <li>Resolver: new debug-trace mode (`--debug`) showing exactly which step (cache/hosts.json/which registry) answered a lookup and how long each took, same data DevTools' Resolver panel uses</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.04</span>
       <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.04.tar.gz">download</a>
     </div>
     <ul>
