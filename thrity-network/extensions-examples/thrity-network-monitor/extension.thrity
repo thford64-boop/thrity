@@ -1,0 +1,42 @@
+extension "Thrity Network Monitor" {
+  id: "thrity-network-monitor"
+  version: "1.0"
+  author: "thford64-boop"
+  description: "Shows resolver, registry, and host information for the current site"
+
+  permissions {
+    devtools
+    page_info
+    network
+  }
+
+  devtool_panel "network_panel" {
+    title: "Network Monitor"
+    on_open: refresh_network()
+  }
+
+  action refresh_network {
+    let site = thrity_info()
+    let regs = list_registries()
+    set_panel_text("network_panel", "Site: " + site + "\nConfigured registries: " + regs)
+    check_primary_registry()
+  }
+
+  action check_primary_registry {
+    let reg = primary_registry()
+    if reg != "" {
+      let listing = http_get(reg + "/list")
+      log("registry replied: " + listing)
+    } else {
+      log("no registries configured - add one to ~/.thrity/config.json")
+    }
+  }
+
+  on page_loaded {
+    refresh_network()
+  }
+
+  on navigation {
+    log("network monitor saw navigation to " + event.url)
+  }
+}

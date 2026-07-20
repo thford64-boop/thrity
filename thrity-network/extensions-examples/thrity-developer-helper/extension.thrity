@@ -1,0 +1,42 @@
+extension "Thrity Developer Helper" {
+  id: "thrity-dev-helper"
+  version: "1.0"
+  author: "thford64-boop"
+  description: "Shows .thrity site information, page load timing, and adds a DevTools panel"
+
+  permissions {
+    devtools
+    page_info
+    ui
+  }
+
+  settings {
+    show_timing: true
+  }
+
+  toolbar_button "open_helper" {
+    label: "Dev Helper"
+    on_click: show_panel("helper_panel")
+  }
+
+  devtool_panel "helper_panel" {
+    title: "Dev Helper"
+    on_open: refresh()
+  }
+
+  action refresh {
+    let info = thrity_info()
+    set_panel_text("helper_panel", "Current site: " + info)
+  }
+
+  on page_loaded {
+    refresh()
+    if settings.show_timing {
+      set_title("loaded in " + event.load_ms + "ms")
+    }
+  }
+
+  on navigation {
+    log("navigating to " + event.url)
+  }
+}

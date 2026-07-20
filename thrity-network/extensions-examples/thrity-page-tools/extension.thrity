@@ -1,0 +1,38 @@
+extension "Thrity Page Tools" {
+  id: "thrity-page-tools"
+  version: "1.0"
+  author: "thford64-boop"
+  description: "Adds useful page utilities: link highlighter and a quick word count"
+
+  permissions {
+    ui
+    page_scripts
+    devtools
+  }
+
+  toolbar_button "highlight_links" {
+    label: "Highlight Links"
+    on_click: run_page_script("highlight-links.js")
+  }
+
+  toolbar_button "word_count" {
+    label: "Word Count"
+    on_click: run_page_script("word-count.js")
+  }
+
+  devtool_panel "page_tools_panel" {
+    title: "Page Tools"
+    on_open: show_help()
+  }
+
+  action show_help {
+    set_panel_text("page_tools_panel",
+      "Highlight Links: outlines every external link on the page.\n" +
+      "Word Count: shows an alert with the page's approximate word count.\n" +
+      "Both run as ordinary page JavaScript (assets/*.js), reload the page to undo.")
+  }
+
+  on page_loaded {
+    log("page tools ready for " + event.url)
+  }
+}
