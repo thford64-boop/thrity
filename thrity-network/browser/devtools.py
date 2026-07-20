@@ -25,6 +25,9 @@ inspector has no way to know about:
 """
 
 import time
+import gi
+
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 
