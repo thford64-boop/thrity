@@ -105,6 +105,25 @@
   .post-card{border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;background:var(--bg-1);}
   .post-head{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-family:var(--mono);font-size:12px;}
   .post-author{color:var(--text);font-weight:700;}
+  .post-author-link{color:var(--text);font-weight:700;background:none;border:none;font-family:var(--mono);font-size:12px;cursor:pointer;padding:0;}
+  .post-author-link:hover{color:var(--accent);text-decoration:underline;}
+
+  /* ---- profile view ---- */
+  #profile-view .profile-head{display:flex;align-items:center;gap:16px;background:var(--bg-1);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:18px;}
+  #profile-view .profile-avatar-lg{width:72px;height:72px;border-radius:50%;object-fit:cover;border:1px solid var(--line);background:var(--bg-2);flex-shrink:0;}
+  #profile-view .profile-name{font-family:var(--mono);font-weight:800;font-size:18px;}
+  #profile-view .profile-bio{color:var(--text-dim);font-size:13px;margin-top:4px;line-height:1.5;}
+  #profile-view .profile-actions{display:flex;gap:8px;margin-top:12px;}
+  #profile-view .profile-back{font-family:var(--mono);font-size:12px;color:var(--text-dim);background:none;border:1px solid var(--line);border-radius:7px;padding:6px 12px;cursor:pointer;margin-bottom:14px;}
+  #profile-view .profile-back:hover{border-color:var(--text-faint);}
+  #profile-view .profile-section-title{font-family:var(--mono);font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 8px;}
+  #message-box{background:var(--bg-1);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;display:none;}
+  #message-box.open{display:block;}
+  #message-box textarea{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:8px 10px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none;resize:vertical;min-height:60px;margin-bottom:8px;}
+  #message-box textarea:focus{border-color:var(--accent);}
+  #message-status{font-size:12px;margin-top:6px;min-height:14px;}
+  #message-status.err{color:#ff5c5c;}
+  #message-status.ok{color:var(--accent);}
   .post-dot{color:var(--text-faint);}
   .post-time{color:var(--text-faint);}
   .post-content{font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--text);}
@@ -233,6 +252,8 @@
   </div>
 
   <div id="feed"><div id="feed-msg"><strong>loading...</strong></div></div>
+
+  <div id="profile-view" style="display:none"></div>
 </main>
 
 <footer>thrity forums — code, exploits, writeups. text and links only, no attachments.</footer>
@@ -445,25 +466,80 @@ async function runSearch(q, tag){
   }
 }
 
+function hashJitter(id){
+  // deterministic 0..3 pseudo-random value per post, so the FYP order doesn't
+  // just collapse to pure chronological (Latest's order) when there's no
+  // upvote/affinity signal yet.
+  var str = String(id);
+  var h = 0;
+  for (var i = 0; i < str.length; i++){ h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+  return (h % 1000) / 1000 * 3;
+}
+
+// Which tags tend to show up together across the current feed. Used to find
+// tags that are "similar to" the ones a user actually likes — e.g. someone
+// who likes #pwn gets a bump on #ctf posts too if the two co-occur a lot,
+// even if they've never engaged with #ctf directly.
+function buildTagCooccurrence(list){
+  var co = {};
+  for (var i = 0; i < list.length; i++){
+    var tags = list[i].tags || [];
+    for (var a = 0; a < tags.length; a++){
+      co[tags[a]] = co[tags[a]] || {};
+      for (var b = 0; b < tags.length; b++){
+        if (a === b) continue;
+        co[tags[a]][tags[b]] = (co[tags[a]][tags[b]] || 0) + 1;
+      }
+    }
+  }
+  return co;
+}
+
+// Takes the tags a user actually has affinity for (liked/upvoted, posted
+// with, searched) and spreads some of that weight onto related tags found
+// via co-occurrence, so the algorithm generalizes past exact tag matches.
+function expandWithSimilarTags(likedTags, co){
+  var expanded = {};
+  Object.keys(likedTags).forEach(function(tag){
+    var w = likedTags[tag];
+    expanded[tag] = (expanded[tag] || 0) + w; // the liked tag itself, full weight
+    var related = co[tag];
+    if (!related) return;
+    var total = Object.keys(related).reduce(function(s, k){ return s + related[k]; }, 0) || 1;
+    Object.keys(related).forEach(function(relatedTag){
+      var strength = related[relatedTag] / total; // how often it co-occurs, normalized
+      expanded[relatedTag] = (expanded[relatedTag] || 0) + w * strength * 0.5; // similar tags count half as much as a direct like
+    });
+  });
+  return expanded;
+}
+
 function scoredForYou(list){
   var now = Date.now();
+  // "liked" signal: cookie tracks upvotes (weight 3, the strongest signal),
+  // tag clicks/searches (weight 1), and tags used while posting (weight 2).
   var cookiePrefs = getPrefs().tags;
+  // account signal: tags from the user's own post history
   var acctPrefs = accountAffinity(list);
-  // combine both signals, cookie signal weighted a bit lighter than account history
-  var combined = {};
-  Object.keys(cookiePrefs).forEach(function(t){ combined[t] = (combined[t] || 0) + cookiePrefs[t] * 0.7; });
-  Object.keys(acctPrefs).forEach(function(t){ combined[t] = (combined[t] || 0) + acctPrefs[t] * 1.3; });
+  var likedTags = {};
+  Object.keys(cookiePrefs).forEach(function(t){ likedTags[t] = (likedTags[t] || 0) + cookiePrefs[t] * 0.7; });
+  Object.keys(acctPrefs).forEach(function(t){ likedTags[t] = (likedTags[t] || 0) + acctPrefs[t] * 1.3; });
+
+  var co = buildTagCooccurrence(list);
+  var combined = expandWithSimilarTags(likedTags, co);
   var maxAffinity = Object.keys(combined).reduce(function(m, k){ return Math.max(m, combined[k]); }, 0) || 1;
 
   function score(p){
     var h = (now - new Date(p.created_at).getTime()) / 3600000;
-    var base = (p.upvotes || 0) - h * 0.15;
+    // upvotes matter a lot more than raw recency here — Latest is already
+    // the place for pure newest-first, so FYP should genuinely re-rank.
+    var base = (p.upvotes || 0) * 2 - h * 0.05;
     var affinity = 0;
     if (p.tags && p.tags.length){
       for (var i = 0; i < p.tags.length; i++){ affinity += combined[p.tags[i]] || 0; }
-      affinity = (affinity / maxAffinity) * 4; // normalized boost, capped influence
+      affinity = (affinity / maxAffinity) * 6; // normalized boost, capped influence
     }
-    return base + affinity;
+    return base + affinity + hashJitter(p.id);
   }
 
   return list.slice().sort(function(a, b){ return score(b) - score(a); });
@@ -485,7 +561,7 @@ function renderFeed(){
     var p = list[i];
     var voted = votedIds[p.id];
     html += '<div class="post-card">';
-    html += '<div class="post-head"><span class="post-author">' + esc(p.author || 'anonymous') + '</span><span class="post-dot">·</span><span class="post-time">' + timeAgo(p.created_at) + '</span></div>';
+    html += '<div class="post-head"><button class="post-author-link" data-user="' + esc(p.author || 'anonymous') + '">' + esc(p.author || 'anonymous') + '</button><span class="post-dot">·</span><span class="post-time">' + timeAgo(p.created_at) + '</span></div>';
     html += '<div class="post-content">' + renderContent(p.content) + '</div>';
     if (p.tags && p.tags.length){
       html += '<div class="post-tags">';
@@ -506,6 +582,11 @@ function renderFeed(){
 }
 
 document.getElementById('feed').addEventListener('click', function(e){
+  var authorEl = e.target.closest('.post-author-link');
+  if (authorEl){
+    goToProfile(authorEl.getAttribute('data-user'));
+    return;
+  }
   var tagEl = e.target.closest('.post-tag');
   if (tagEl){
     bumpPref([tagEl.getAttribute('data-tag')], 1);
@@ -889,6 +970,17 @@ document.getElementById('profile-save').addEventListener('click', async function
     saveSession();
     document.getElementById('user-name').textContent = username || session.user.email;
     updateAvatarChip();
+    // best-effort: mirror into a public "profiles" table so /user/<name> pages
+    // (viewed by anyone) can look up someone's avatar/bio. Needs a `profiles`
+    // table (id uuid pk, username text unique, avatar_url text, bio text)
+    // with public select + owner-only insert/update RLS.
+    try{
+      await fetch(SB_URL + '/rest/v1/profiles', {
+        method: 'POST',
+        headers: authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+        body: JSON.stringify({ id: session.user.id, username: username, avatar_url: avatarUrl, bio: bio })
+      });
+    }catch(ignore){}
     statusEl.textContent = 'saved'; statusEl.className = 'ok';
     setTimeout(function(){ document.getElementById('profile-overlay').classList.remove('open'); }, 700);
   }catch(e){
@@ -898,9 +990,167 @@ document.getElementById('profile-save').addEventListener('click', async function
   }
 });
 
+/* ---------------- PROFILE PAGE (/user/:username) ---------------- */
+// requires two more Supabase tables beyond what's already set up:
+//   profiles(id uuid pk, username text unique, avatar_url text, bio text) — public select
+//   messages(id, sender_id, recipient_id, body, created_at) — insert: sender_id = auth.uid()
+//   follows(follower_id, followee_id) — insert: follower_id = auth.uid()
+
+function goToProfile(username){
+  history.pushState({ user: username }, '', '/user/' + encodeURIComponent(username));
+  renderProfileView(username);
+}
+function goHome(){
+  history.pushState({}, '', '/');
+  showMainApp();
+}
+window.addEventListener('popstate', function(){
+  var m = location.pathname.match(/^\/user\/([^\/]+)\/?$/i);
+  if (m) renderProfileView(decodeURIComponent(m[1]));
+  else showMainApp();
+});
+
+function showMainApp(){
+  document.getElementById('profile-view').style.display = 'none';
+  document.getElementById('composer').style.display = '';
+  document.getElementById('search-panel').style.display = '';
+  document.getElementById('category-bar').style.display = 'flex';
+  document.getElementById('feed').style.display = '';
+  renderFeed();
+}
+
+async function renderProfileView(username){
+  document.getElementById('composer').style.display = 'none';
+  document.getElementById('search-panel').style.display = 'none';
+  document.getElementById('category-bar').style.display = 'none';
+  document.getElementById('trending-panel').classList.remove('show');
+  document.getElementById('feed').style.display = 'none';
+  var view = document.getElementById('profile-view');
+  view.style.display = 'block';
+  view.innerHTML = '<button class="profile-back" id="profile-back-btn">&larr; back</button><div id="feed-msg"><strong>loading profile...</strong></div>';
+  document.getElementById('profile-back-btn').addEventListener('click', goHome);
+
+  var profile = null;
+  try{
+    var r = await fetch(SB_URL + '/rest/v1/profiles?username=ilike.' + encodeURIComponent(username), { headers: authHeaders() });
+    if (r.ok){ var rows = await r.json(); profile = rows[0] || null; }
+  }catch(e){}
+
+  var userPosts = [];
+  try{
+    var r2 = await fetch(SB_URL + '/rest/v1/posts?author=ilike.' + encodeURIComponent(username) + '&order=created_at.desc&limit=50', { headers: authHeaders() });
+    if (r2.ok) userPosts = await r2.json();
+  }catch(e){}
+
+  var avatar = (profile && profile.avatar_url) || '';
+  var bio = (profile && profile.bio) || '';
+  var canMessage = !!(session && profile && profile.id && profile.id !== session.user.id);
+  var isSelf = !!(session && profile && profile.id === session.user.id);
+
+  var html = '<button class="profile-back" id="profile-back-btn">&larr; back</button>';
+  html += '<div class="profile-head">';
+  html += '<img class="profile-avatar-lg" src="' + esc(avatar) + '" alt="" onerror="this.style.visibility=\'hidden\'">';
+  html += '<div><div class="profile-name">' + esc(username) + '</div>';
+  html += '<div class="profile-bio">' + (bio ? esc(bio) : '<span class="composer-hint">no bio yet</span>') + '</div>';
+  html += '<div class="profile-actions">';
+  if (!profile){
+    html += '<span class="composer-hint">this user hasn\'t set up a profile yet</span>';
+  } else if (isSelf){
+    html += '<span class="composer-hint">this is you</span>';
+  } else {
+    html += '<button class="ghost-btn" id="add-btn" data-followee="' + esc(profile.id) + '">Add</button>';
+    html += '<button class="solid-btn" id="msg-btn"' + (canMessage ? '' : ' disabled') + '>Message</button>';
+  }
+  html += '</div></div></div>';
+
+  if (canMessage){
+    html += '<div id="message-box"><textarea id="message-text" placeholder="write a message..." maxlength="1000"></textarea><button class="solid-btn" id="message-send">Send</button><div id="message-status"></div></div>';
+  }
+
+  html += '<div class="profile-section-title">posts</div>';
+  if (!userPosts.length){
+    html += '<div id="feed-msg"><strong>no posts yet</strong></div>';
+  } else {
+    html += '<div id="profile-posts"></div>';
+  }
+  view.innerHTML = html;
+  document.getElementById('profile-back-btn').addEventListener('click', goHome);
+
+  if (userPosts.length){
+    var target = document.getElementById('profile-posts');
+    var origPosts = posts, origFeedEl = null;
+    // reuse renderFeed's card markup by temporarily rendering into a scratch container
+    var feedBackup = document.getElementById('feed').innerHTML;
+    var feedDisplayBackup = document.getElementById('feed').style.display;
+    posts = userPosts;
+    document.getElementById('feed').style.display = 'none';
+    var savedTab = currentTab, savedSearch = currentSearch;
+    currentTab = 'latest'; currentSearch = { q: '', tag: null };
+    renderFeed();
+    target.innerHTML = document.getElementById('feed').innerHTML;
+    currentTab = savedTab; currentSearch = savedSearch;
+    posts = origPosts;
+    document.getElementById('feed').innerHTML = feedBackup;
+    document.getElementById('feed').style.display = feedDisplayBackup;
+  }
+
+  var msgBtn = document.getElementById('msg-btn');
+  if (msgBtn){
+    msgBtn.addEventListener('click', function(){
+      document.getElementById('message-box').classList.toggle('open');
+    });
+  }
+  var sendBtn = document.getElementById('message-send');
+  if (sendBtn){
+    sendBtn.addEventListener('click', async function(){
+      var body = document.getElementById('message-text').value.trim();
+      var statusEl = document.getElementById('message-status');
+      if (!body){ statusEl.textContent = 'write something first'; statusEl.className = 'err'; return; }
+      this.disabled = true;
+      try{
+        var r3 = await fetch(SB_URL + '/rest/v1/messages', {
+          method: 'POST',
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ sender_id: session.user.id, recipient_id: profile.id, body: body })
+        });
+        if (!r3.ok) throw new Error(await r3.text());
+        statusEl.textContent = 'sent'; statusEl.className = 'ok';
+        document.getElementById('message-text').value = '';
+      }catch(e){
+        statusEl.textContent = 'couldn\'t send: ' + e.message; statusEl.className = 'err';
+      }finally{
+        this.disabled = false;
+      }
+    });
+  }
+  var addBtn = document.getElementById('add-btn');
+  if (addBtn){
+    addBtn.addEventListener('click', async function(){
+      if (!session){ openAuth('login'); return; }
+      this.disabled = true;
+      try{
+        var r4 = await fetch(SB_URL + '/rest/v1/follows', {
+          method: 'POST',
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ follower_id: session.user.id, followee_id: addBtn.getAttribute('data-followee') })
+        });
+        if (!r4.ok) throw new Error(await r4.text());
+        addBtn.textContent = 'Added';
+      }catch(e){
+        addBtn.disabled = false;
+        alert('couldn\'t add: ' + e.message);
+      }
+    });
+  }
+}
+
 /* ---------------- INIT ---------------- */
 restoreSession();
-fetchFeed();
+(function initRoute(){
+  var m = location.pathname.match(/^\/user\/([^\/]+)\/?$/i);
+  if (m) renderProfileView(decodeURIComponent(m[1]));
+  else fetchFeed();
+})();
 </script>
 </body>
 </html>
