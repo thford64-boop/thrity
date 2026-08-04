@@ -127,10 +127,47 @@
   }
   footer a { color: var(--muted); }
   a { color: var(--accent); }
+
+  /* ---- other projects ---- */
+  .project-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .project-card .project-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.05rem;
+  }
+  .project-card .project-info p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .project-card .download-btn {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
 <main>
+  <h2>Other Projects</h2>
+  <div class="project-card">
+    <div class="project-info">
+      <h3>VUSB</h3>
+      <p>Virtual USB Manager for Linux Mint</p>
+    </div>
+    <a class="download-btn" href="https://github.com/thford64-boop/VUSB/releases/download/1/VUSB.flatpak">
+      Download
+    </a>
+  </div>
+
   <h1>Thrity Network</h1>
   <p class="tagline">A free, lightweight browser and network.</p>
   <div class="tags">
