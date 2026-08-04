@@ -970,19 +970,31 @@ document.getElementById('profile-save').addEventListener('click', async function
     saveSession();
     document.getElementById('user-name').textContent = username || session.user.email;
     updateAvatarChip();
-    // best-effort: mirror into a public "profiles" table so /user/<name> pages
+    // mirror into a public "profiles" table so /user/<name> pages
     // (viewed by anyone) can look up someone's avatar/bio. Needs a `profiles`
     // table (id uuid pk, username text unique, avatar_url text, bio text)
     // with public select + owner-only insert/update RLS.
+    var mirrorOk = true;
     try{
-      await fetch(SB_URL + '/rest/v1/profiles', {
+      var pr = await fetch(SB_URL + '/rest/v1/profiles?on_conflict=id', {
         method: 'POST',
         headers: authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
         body: JSON.stringify({ id: session.user.id, username: username, avatar_url: avatarUrl, bio: bio })
       });
-    }catch(ignore){}
-    statusEl.textContent = 'saved'; statusEl.className = 'ok';
-    setTimeout(function(){ document.getElementById('profile-overlay').classList.remove('open'); }, 700);
+      if (!pr.ok){
+        var errText = await pr.text();
+        throw new Error(errText);
+      }
+      statusEl.textContent = 'saved'; statusEl.className = 'ok';
+    }catch(profileErr){
+      // saved to your account, but the public /user/<name> page won't show it
+      // until this succeeds — usually means the `profiles` table (see above)
+      // doesn't exist yet or its RLS policy is blocking the write.
+      mirrorOk = false;
+      statusEl.textContent = 'saved locally, but public profile page failed: ' + profileErr.message;
+      statusEl.className = 'err';
+    }
+    if (mirrorOk) setTimeout(function(){ document.getElementById('profile-overlay').classList.remove('open'); }, 700);
   }catch(e){
     statusEl.textContent = e.message; statusEl.className = 'err';
   }finally{
