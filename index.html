@@ -1,276 +1,906 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>thrity.online — Download</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thrity Forums — code &amp; security</title>
 <style>
-  :root {
-    --bg: #0f1115;
-    --panel: #171a21;
-    --border: #2a2e38;
-    --text: #e6e6e6;
-    --muted: #9aa0ac;
-    --accent: #4dd0e1;
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#08090a;
+    --bg-1:#0f1012;
+    --bg-2:#17181b;
+    --line:#232427;
+    --text:#eceeef;
+    --text-dim:#8b8e94;
+    --text-faint:#57595e;
+    --accent:#53fc18;
+    --accent-dim:rgba(83,252,24,.12);
+    --accent-dim2:rgba(83,252,24,.22);
+    --radius:10px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 60px 20px;
-  }
-  main {
-    width: 100%;
-    max-width: 560px;
-  }
-  h1 {
-    font-size: 2rem;
-    margin: 0 0 4px 0;
-    letter-spacing: -0.02em;
-  }
-  .tagline {
-    color: var(--muted);
-    margin: 0 0 32px 0;
-  }
-  .tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 32px;
-  }
-  .tag {
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-size: 0.8rem;
-    padding: 3px 10px;
-    border-radius: 999px;
-  }
-  .download-btn {
-    display: inline-block;
-    background: var(--accent);
-    color: #05171a;
-    font-weight: 600;
-    text-decoration: none;
-    padding: 12px 22px;
-    border-radius: 8px;
-    margin-bottom: 32px;
-  }
-  .download-btn:hover {
-    opacity: 0.9;
-  }
-  h2 {
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    margin: 32px 0 10px 0;
-  }
-  pre {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    overflow-x: auto;
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-  /* ---- changelog ---- */
-  .changelog-entry {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px 18px;
-    margin-bottom: 12px;
-  }
-  .changelog-entry .row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-  .changelog-entry .version {
-    font-weight: 600;
-    color: var(--text);
-    font-size: 0.95rem;
-  }
-  .changelog-entry .version .latest {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #05171a;
-    background: var(--accent);
-    padding: 2px 6px;
-    border-radius: 999px;
-    margin-left: 8px;
-    vertical-align: middle;
-  }
-  .changelog-entry a.dl {
-    font-size: 0.8rem;
-    white-space: nowrap;
-  }
-  .changelog-entry ul {
-    margin: 0;
-    padding-left: 18px;
-    color: var(--muted);
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-  footer {
-    margin-top: 40px;
-    font-size: 0.85rem;
-    color: var(--muted);
-  }
-  footer a { color: var(--muted); }
-  a { color: var(--accent); }
+  html,body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  ::selection{background:var(--accent-dim2);}
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
 
-  /* ---- other projects ---- */
-  .project-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px 18px;
-    margin-bottom: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .project-card .project-info h3 {
-    margin: 0 0 4px 0;
-    font-size: 1.05rem;
-  }
-  .project-card .project-info p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.85rem;
-  }
-  .project-card .download-btn {
-    margin-bottom: 0;
-    flex-shrink: 0;
+  /* ---- header ---- */
+  header{position:sticky;top:0;z-index:190;background:rgba(8,9,10,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .header-inner{max-width:720px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;gap:18px;}
+  .logo{font-family:var(--mono);font-weight:800;font-size:20px;letter-spacing:-.5px;display:flex;align-items:center;gap:2px;white-space:nowrap;}
+  .logo .k{color:var(--accent);}
+  .logo .f{color:var(--text-faint);font-weight:500;}
+  nav.tabs{display:flex;gap:4px;background:var(--bg-2);border:1px solid var(--line);border-radius:999px;padding:3px;}
+  nav.tabs button{background:none;border:none;color:var(--text-dim);font-family:var(--sans);font-weight:600;font-size:13px;padding:7px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;}
+  nav.tabs button.active{background:var(--bg);color:var(--text);}
+  .header-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+  .ghost-btn{background:none;border:1px solid var(--line);color:var(--text);font-family:var(--sans);font-weight:600;font-size:12px;padding:7px 13px;border-radius:8px;cursor:pointer;}
+  .ghost-btn:hover{border-color:var(--text-faint);}
+  .solid-btn{background:var(--accent);border:1px solid var(--accent);color:#08090a;font-family:var(--sans);font-weight:700;font-size:12px;padding:7px 13px;border-radius:8px;cursor:pointer;}
+  .solid-btn:hover{filter:brightness(1.08);}
+  .solid-btn:disabled,.ghost-btn:disabled{opacity:.5;cursor:default;}
+  #user-chip{font-family:var(--mono);font-size:12px;color:var(--text-dim);display:none;align-items:center;gap:8px;}
+  #user-chip strong{color:var(--accent);font-weight:700;}
+  #user-avatar{width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid var(--line);}
+  .post-avatar{width:20px;height:20px;border-radius:50%;object-fit:cover;border:1px solid var(--line);vertical-align:middle;margin-right:2px;}
+
+  main{max-width:720px;margin:0 auto;padding:20px;}
+
+  /* ---- composer ---- */
+  #composer{background:var(--bg-1);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:22px;transition:border-color .15s;}
+  #composer.expanded{border-color:#2c2e32;}
+  #composer textarea{width:100%;background:none;border:none;color:var(--text);font-family:var(--sans);font-size:14.5px;line-height:1.5;resize:none;outline:none;min-height:24px;}
+  #composer textarea::placeholder{color:var(--text-faint);}
+  #composer-extra{display:none;margin-top:12px;}
+  #composer.expanded #composer-extra{display:block;}
+  .tag-input-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-bottom:10px;}
+  .tag-chip{background:var(--accent-dim);color:var(--accent);font-family:var(--mono);font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:6px;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  .tag-chip button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;line-height:1;padding:0;}
+  .tag-input-row input{flex:1;min-width:100px;background:none;border:none;color:var(--text);font-family:var(--mono);font-size:12.5px;outline:none;padding:4px;}
+  .tag-input-row input::placeholder{color:var(--text-faint);}
+  .composer-footer{display:flex;align-items:center;gap:10px;}
+  .composer-footer input[type=text]{flex:0 0 auto;width:160px;background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:7px 10px;color:var(--text);font-family:var(--sans);font-size:12.5px;outline:none;}
+  .composer-footer input[type=text]:focus{border-color:var(--text-faint);}
+  .composer-hint{font-size:11.5px;color:var(--text-faint);margin-right:auto;}
+  #post-status{font-size:12px;margin-top:8px;min-height:16px;}
+  #post-status.err{color:#ff5c5c;}
+  #post-status.ok{color:var(--accent);}
+
+  /* ---- search ---- */
+  #search-panel{display:none;background:var(--bg-1);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:22px;}
+  #search-panel.open{display:block;}
+  .search-row{display:flex;gap:8px;}
+  .search-row input{flex:1;background:var(--bg-2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--sans);font-size:13.5px;outline:none;}
+  .search-row input:focus{border-color:var(--accent);}
+  #search-active{font-family:var(--mono);font-size:11.5px;color:var(--text-dim);margin-top:10px;display:none;align-items:center;gap:8px;}
+  #search-active.show{display:flex;}
+  #search-active button{background:none;border:1px solid var(--line);color:var(--text-dim);border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;}
+
+  /* ---- category bar ---- */
+  #category-bar{display:flex;gap:8px;margin-bottom:14px;}
+  #category-bar button{background:var(--bg-1);border:1px solid var(--line);color:var(--text-dim);font-family:var(--mono);font-weight:600;font-size:12px;padding:6px 13px;border-radius:7px;cursor:pointer;}
+  #category-bar button.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+
+  /* ---- quick tags ---- */
+  .quick-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .quick-tags button{background:none;border:1px dashed var(--line);color:var(--text-faint);font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;}
+  .quick-tags button:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* ---- trending panel ---- */
+  #trending-panel{display:none;background:var(--bg-1);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;}
+  #trending-panel.show{display:block;}
+  .trending-title{font-family:var(--mono);font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  #trending-tags button{border-style:solid;}
+  #trending-tags .tag-count{color:var(--text-faint);margin-left:4px;}
+
+
+  /* ---- feed ---- */
+  #feed-msg{text-align:center;padding:60px 20px;color:var(--text-faint);}
+  #feed-msg strong{display:block;font-size:18px;color:var(--text-dim);margin-bottom:6px;font-family:var(--mono);}
+  .post-card{border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;background:var(--bg-1);}
+  .post-head{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-family:var(--mono);font-size:12px;}
+  .post-author{color:var(--text);font-weight:700;}
+  .post-dot{color:var(--text-faint);}
+  .post-time{color:var(--text-faint);}
+  .post-content{font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--text);}
+  .post-content .embed{display:block;margin:10px 0;}
+  .post-content .embed img{max-width:100%;max-height:420px;border-radius:8px;border:1px solid var(--line);display:block;}
+  .post-content .embed-link{word-break:break-all;font-size:13px;}
+  .post-content .code-block{display:block;background:#0c0d0f;border:1px solid var(--line);border-radius:8px;padding:11px 13px;margin:10px 0;font-family:var(--mono);font-size:12.5px;line-height:1.55;overflow-x:auto;white-space:pre;color:#d7f7c8;}
+  .post-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+  .post-tag{background:var(--bg-2);border:1px solid var(--line);color:var(--text-dim);font-family:var(--mono);font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;cursor:pointer;}
+  .post-tag:hover{border-color:var(--accent);color:var(--accent);}
+  .post-actions{display:flex;align-items:center;gap:14px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);}
+  .upvote-btn{background:none;border:1px solid var(--line);color:var(--text-dim);border-radius:7px;padding:5px 12px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  .upvote-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .upvote-btn.voted{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+  .copy-btn{background:none;border:none;color:var(--text-faint);font-size:11.5px;font-family:var(--sans);cursor:pointer;}
+  .copy-btn:hover{color:var(--text-dim);}
+  .delete-btn{background:none;border:1px solid var(--line);color:#ff5c5c;font-size:11px;font-weight:600;font-family:var(--mono);cursor:pointer;margin-left:auto;padding:4px 10px;border-radius:6px;}
+  .delete-btn:hover{background:#ff5c5c;color:#08090a;border-color:#ff5c5c;}
+
+  /* ---- auth modal ---- */
+  #auth-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:center;justify-content:center;padding:20px;}
+  #auth-overlay.open{display:flex;}
+  #auth-modal{background:var(--bg-1);border:1px solid var(--line);border-radius:var(--radius);padding:22px;width:100%;max-width:340px;}
+  #auth-modal h3{font-family:var(--mono);font-size:15px;margin-bottom:14px;}
+  #auth-modal input{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:var(--text);font-family:var(--sans);font-size:13.5px;outline:none;margin-bottom:8px;}
+  #auth-modal input:focus{border-color:var(--accent);}
+  #auth-modal .solid-btn{width:100%;padding:9px;font-size:13px;margin-top:4px;}
+  #auth-modal .switch-mode{font-size:12px;color:var(--text-dim);margin-top:12px;text-align:center;}
+  #auth-modal .switch-mode a{cursor:pointer;}
+  #auth-status{font-size:12px;margin-top:8px;min-height:14px;}
+  #auth-status.err{color:#ff5c5c;}
+  #auth-status.ok{color:var(--accent);}
+  #auth-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--text-faint);font-size:20px;cursor:pointer;}
+  #auth-modal{position:relative;}
+
+  /* ---- profile modal ---- */
+  #profile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:center;justify-content:center;padding:20px;}
+  #profile-overlay.open{display:flex;}
+  #profile-modal{background:var(--bg-1);border:1px solid var(--line);border-radius:var(--radius);padding:22px;width:100%;max-width:340px;position:relative;}
+  #profile-modal h3{font-family:var(--mono);font-size:15px;margin-bottom:14px;}
+  #profile-modal input,#profile-modal textarea{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:var(--text);font-family:var(--sans);font-size:13.5px;outline:none;margin-bottom:8px;}
+  #profile-modal textarea{resize:vertical;min-height:60px;font-family:var(--sans);}
+  #profile-modal input:focus,#profile-modal textarea:focus{border-color:var(--accent);}
+  #profile-modal .solid-btn{width:100%;padding:9px;font-size:13px;margin-top:4px;}
+  #profile-avatar-preview{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid var(--line);display:block;margin:0 auto 14px;background:var(--bg-2);}
+  #profile-status{font-size:12px;margin-top:8px;min-height:14px;}
+  #profile-status.err{color:#ff5c5c;}
+  #profile-status.ok{color:var(--accent);}
+  #profile-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--text-faint);font-size:20px;cursor:pointer;}
+
+  footer{max-width:720px;margin:0 auto;padding:20px;font-family:var(--mono);font-size:11px;color:var(--text-faint);text-align:center;}
+
+  @media(max-width:480px){
+    .header-inner{padding:12px 14px;gap:10px;}
+    nav.tabs button{padding:6px 10px;font-size:12px;}
+    main{padding:14px;}
+    .composer-footer input[type=text]{width:110px;}
   }
 </style>
 </head>
 <body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo"><span class="k">Thrity</span><span class="f">Forums</span></div>
+    <nav class="tabs">
+      <button class="active" data-tab="fyp">For You</button>
+      <button data-tab="latest">Latest</button>
+      <button data-tab="trending">Trending</button>
+      <button data-tab="search">Search</button>
+    </nav>
+    <div class="header-right">
+      <div id="user-chip"><img id="user-avatar" src="" alt="" style="display:none"><strong id="user-name"></strong><button class="ghost-btn" id="profile-btn">Profile</button><button class="ghost-btn" id="logout-btn">Log out</button></div>
+      <button class="ghost-btn" id="login-btn">Log in</button>
+      <button class="solid-btn" id="signup-btn">Sign up</button>
+    </div>
+  </div>
+</header>
+
 <main>
-  <h2>Other Projects</h2>
-  <div class="project-card">
-    <div class="project-info">
-      <h3>VUSB</h3>
-      <p>Virtual USB Manager for Linux Mint</p>
+  <div id="composer">
+    <textarea id="post-content" placeholder="Post code, a writeup, a question, a CVE... use &#96;&#96;&#96; for code blocks, paste a link to embed it." rows="1"></textarea>
+    <div id="composer-extra">
+      <div class="quick-tags" id="quick-tags">
+        <button data-tag="coding">#coding</button>
+        <button data-tag="cybersecurity">#cybersecurity</button>
+        <button data-tag="ctf">#ctf</button>
+        <button data-tag="pwn">#pwn</button>
+        <button data-tag="webdev">#webdev</button>
+        <button data-tag="linux">#linux</button>
+        <button data-tag="networking">#networking</button>
+      </div>
+      <div class="tag-input-row" id="tag-row">
+        <input type="text" id="tag-input" placeholder="add tags, press enter">
+      </div>
+      <div class="composer-footer">
+        <span class="composer-hint">no account needed</span>
+        <input type="text" id="author-input" placeholder="post as (optional)">
+        <button class="solid-btn" id="post-btn">Post</button>
+      </div>
+      <div id="post-status"></div>
     </div>
-    <a class="download-btn" href="https://github.com/thford64-boop/VUSB/releases/download/1/VUSB.flatpak">
-      Download
-    </a>
   </div>
 
-  <h1>Thrity Network</h1>
-  <p class="tagline">A free, lightweight browser and network.</p>
-  <div class="tags">
-    <span class="tag">no ads</span>
-    <span class="tag">no tracking</span>
-    <span class="tag">no accounts</span>
-    <span class="tag">open source</span>
-  </div>
-  <a class="download-btn" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.05.tar.gz">
-    Download thrity-network0.05.tar.gz
-  </a>
-  <h2>Install</h2>
-  <pre>tar -xzf thrity-network0.05.tar.gz
-cd thrity-network
-bash setup.sh
-python3 browser/30web.py</pre>
-
-  <h2>Changelog</h2>
-
-  <div class="changelog-entry">
-    <div class="row">
-      <span class="version">v0.05 <span class="latest">latest</span></span>
-      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.05.tar.gz">download</a>
+  <div id="search-panel">
+    <div class="search-row">
+      <input type="text" id="search-input" placeholder="search posts or #tags...">
+      <button class="solid-btn" id="search-btn">Search</button>
     </div>
-    <ul>
-      <li>New: full developer platform — WebKit's built-in Web Inspector is back on (element/CSS/JS console/network/storage), plus a Thrity DevTools window with resolver debugging, page timing, a security panel, and an extensions panel</li>
-      <li>New: a complete extension system with a small sandboxed DSL (no Python execution, no filesystem/network access beyond what's explicitly permitted) — toolbar buttons, menus, panels, page scripts, and 6 browser events extensions can react to</li>
-      <li>New: permission system (ui, devtools, page_info, page_scripts, network, storage) — network access is restricted to the Thrity network only, storage is private and capped per extension, page scripts only load from the extension's own folder</li>
-      <li>New: 3 example extensions included and auto-installed by setup.sh — Developer Helper, Page Tools, Network Monitor — plus a headless CLI (`extensions/cli.py`) to validate and test extensions without launching the browser</li>
-      <li>Fixed: many .onion sites failing with "Internal SOCKSv5 proxy server error" — bare onion addresses now default to plain HTTP instead of forced HTTPS, self-signed onion certs are trusted the same way .thrity certs are, and failed loads on Tor-anonymized tabs now retry automatically since fresh-circuit failures are usually transient</li>
-      <li>Servers: host server gets a `/thrity-info` debug endpoint (uptime, requests served); registry server gets a `/status` endpoint (version, uptime, site/request counts); both support `--verbose` for full per-request timing logs</li>
-      <li>Resolver: new debug-trace mode (`--debug`) showing exactly which step (cache/hosts.json/which registry) answered a lookup and how long each took, same data DevTools' Resolver panel uses</li>
-    </ul>
+    <div id="search-active"><span id="search-active-label"></span><button id="search-clear">clear</button></div>
   </div>
 
-  <div class="changelog-entry">
-    <div class="row">
-      <span class="version">v0.04</span>
-      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.04.tar.gz">download</a>
-    </div>
-    <ul>
-      <li>Faster: registries are now queried in parallel instead of one-by-one, and resolved names are cached briefly, so page loads and clicking around a site are noticeably snappier</li>
-      <li>Faster: host server now gzip-compresses pages/CSS/JS on the wire and lets browsers cache static assets for a session</li>
-      <li>Fixes many sites that "didn't work": local storage and video playback (MediaSource) are back on, still wiped when a tab closes, plus a more standard browser identity so fewer sites wrongly block 30web as unsupported</li>
-      <li>A failed .thrity page load now automatically re-resolves and retries once instead of leaving you stuck if a site recently moved</li>
-      <li>Camera/mic/location access is now asked per-site with a prompt instead of silently blocked outright</li>
-      <li>More secure: registry server can run with --https to stop registration secrets from being sent in plain text</li>
-      <li>More secure: stricter validation on .thrity names everywhere (resolver, host server, registry), file writes to the registry are now atomic and race-safe, and lookups are rate-limited too, not just registrations</li>
-    </ul>
+  <div id="category-bar">
+    <button class="active" data-cat="">All</button>
+    <button data-cat="coding">Coding</button>
+    <button data-cat="cybersecurity">Cybersecurity</button>
+    <button data-cat="webdev">Webdev</button>
+    <button data-cat="ctf">CTF</button>
+    <button data-cat="networking">Networking</button>
+    <button data-cat="linux">Linux</button>
   </div>
 
-  <div class="changelog-entry">
-    <div class="row">
-      <span class="version">v0.03</span>
-      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.03.tar.gz">download</a>
-    </div>
-    <ul>
-      <li>Anonymize (Tor) is now per-tab, not browser-wide</li>
-      <li>Every tab fully isolated - separate cookies/login state per tab, not just no shared history</li>
-      <li>.thrity sites can now link to each other with thrity://name links, not just be typed in the address bar</li>
-      <li>New "Directory" button browses every site a registry knows about</li>
-      <li>Host server no longer exposes raw folder listings when a page is missing</li>
-      <li>Registry server now rate-limits registrations to slow down name-squatting scripts</li>
-    </ul>
+  <div id="trending-panel">
+    <div class="trending-title">trending tags</div>
+    <div id="trending-tags" class="quick-tags"></div>
   </div>
 
-  <div class="changelog-entry">
-    <div class="row">
-      <span class="version">v0.02</span>
-      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.02.tar.gz">download</a>
-    </div>
-    <ul>
-      <li>Tabs, no saved history — every tab is wiped on close</li>
-      <li>Optional HTTPS for .thrity sites (self-signed, auto-trusted)</li>
-      <li>"Anonymize" toggle routes traffic through Tor</li>
-      <li>Hardened WebKit settings (mic/camera blocked, no DNS prefetch, no local storage)</li>
-      <li>Fixed widespread TLS handshake errors on clearnet sites</li>
-    </ul>
-  </div>
-
-  <div class="changelog-entry">
-    <div class="row">
-      <span class="version">v0.01</span>
-      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network0.01.zip">download</a>
-    </div>
-    <ul>
-      <li>Address bar now shows the .thrity name instead of the real IP:port</li>
-    </ul>
-  </div>
-
-  <div class="changelog-entry">
-    <div class="row">
-      <span class="version">v0.00 — first release</span>
-      <a class="dl" href="https://github.com/thford64-boop/thrity/releases/download/thrity/thrity-network.tar.gz">download</a>
-    </div>
-    <ul>
-      <li>30web browser (WebKit2GTK), .thrity resolver, host server, registry server</li>
-    </ul>
-  </div>
-
-  <footer>
-    <a href="https://github.com/thford64-boop/thrity">Source code on GitHub</a>
-  </footer>
+  <div id="feed"><div id="feed-msg"><strong>loading...</strong></div></div>
 </main>
+
+<footer>thrity forums — code, exploits, writeups. text and links only, no attachments.</footer>
+
+<div id="auth-overlay">
+  <div id="auth-modal">
+    <button id="auth-close">&#x2715;</button>
+    <h3 id="auth-title">Log in</h3>
+    <input type="text" id="auth-username" placeholder="username" style="display:none">
+    <input type="email" id="auth-email" placeholder="email">
+    <input type="password" id="auth-password" placeholder="password">
+    <button class="solid-btn" id="auth-submit">Log in</button>
+    <div id="auth-status"></div>
+    <div class="switch-mode" id="auth-switch">No account? <a id="auth-switch-link">Sign up</a></div>
+  </div>
+</div>
+
+<div id="profile-overlay">
+  <div id="profile-modal">
+    <button id="profile-close">&#x2715;</button>
+    <h3>Edit profile</h3>
+    <img id="profile-avatar-preview" src="" alt="">
+    <input type="text" id="profile-username" placeholder="username">
+    <input type="url" id="profile-avatar-url" placeholder="image URL for your avatar">
+    <textarea id="profile-bio" placeholder="short bio (optional)" maxlength="200"></textarea>
+    <button class="solid-btn" id="profile-save">Save profile</button>
+    <div id="profile-status"></div>
+  </div>
+</div>
+
+<script>
+var SB_URL = 'https://qicckvwmacivopslntpd.supabase.co';
+var SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpY2NrdndtYWNpdm9wc2xudHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNTA5MTEsImV4cCI6MjA5NzkyNjkxMX0.S5lOqSgt6uU1yxRpkiI74tkii0GcfHBOyR3550P_6gQ';
+
+var session = null; // { access_token, user }
+var posts = [];
+var tagsArr = [];
+var currentTab = 'fyp';
+var currentSearch = null; // {q, tag}
+var categoryFilter = ''; // '', 'coding', 'cybersecurity'
+var votedIds = {};
+var MODERATOR_EMAILS = ['fritosvr@gmail.com'];
+function isModerator(){
+  return !!(session && session.user && session.user.email && MODERATOR_EMAILS.indexOf(session.user.email.toLowerCase()) !== -1);
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function setCookie(name, value, days){
+  var expires = '';
+  if (days){
+    var d = new Date();
+    d.setTime(d.getTime() + days*24*60*60*1000);
+    expires = ';expires=' + d.toUTCString();
+  }
+  document.cookie = name + '=' + encodeURIComponent(value) + expires + ';path=/;SameSite=Lax';
+}
+function getCookie(name){
+  var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+function eraseCookie(name){
+  document.cookie = name + '=;path=/;max-age=0;SameSite=Lax';
+}
+
+/* ---------------- FYP PREFERENCES (cookie) ---------------- */
+// tracks which tags this browser has engaged with, so the "For You" feed
+// can be ranked using local activity in addition to account history.
+function getPrefs(){
+  var raw = getCookie('tf_prefs');
+  if (!raw) return { tags: {} };
+  try{
+    var p = JSON.parse(raw);
+    if (!p.tags) p.tags = {};
+    return p;
+  }catch(e){ return { tags: {} }; }
+}
+function savePrefs(p){ setCookie('tf_prefs', JSON.stringify(p), 180); }
+function bumpPref(tagList, weight){
+  if (!tagList || !tagList.length) return;
+  var p = getPrefs();
+  for (var i = 0; i < tagList.length; i++){
+    var t = tagList[i];
+    p.tags[t] = (p.tags[t] || 0) + weight;
+  }
+  savePrefs(p);
+}
+// pulls interest signal from the logged-in account's own post history
+// (tags they've written about) — separate from the cookie-based signal.
+function accountAffinity(list){
+  var aff = {};
+  if (!session) return aff;
+  for (var i = 0; i < list.length; i++){
+    var p = list[i];
+    if (p.user_id && String(p.user_id).toLowerCase() === String(session.user.id).toLowerCase() && p.tags){
+      for (var j = 0; j < p.tags.length; j++){
+        aff[p.tags[j]] = (aff[p.tags[j]] || 0) + 1;
+      }
+    }
+  }
+  return aff;
+}
+
+function saveSession(){
+  setCookie('kf_session', JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    user: session.user
+  }), 30);
+}
+
+async function restoreSession(){
+  var raw = getCookie('kf_session');
+  if (!raw) return;
+  var saved;
+  try{ saved = JSON.parse(raw); }catch(e){ eraseCookie('kf_session'); return; }
+  if (!saved || !saved.refresh_token) { eraseCookie('kf_session'); return; }
+  try{
+    var r = await fetch(SB_URL + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { apikey: SB_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: saved.refresh_token })
+    });
+    var d = await r.json();
+    if (!r.ok || !d.access_token) throw new Error('expired');
+    session = { access_token: d.access_token, refresh_token: d.refresh_token, user: d.user };
+    saveSession();
+    onAuthed();
+  }catch(e){
+    eraseCookie('kf_session');
+  }
+}
+
+function authHeaders(extra){
+  return Object.assign({
+    apikey: SB_ANON,
+    Authorization: 'Bearer ' + (session ? session.access_token : SB_ANON)
+  }, extra || {});
+}
+
+function timeAgo(iso){
+  var diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h';
+  if (diff < 604800) return Math.floor(diff/86400) + 'd';
+  return new Date(iso).toLocaleDateString();
+}
+
+function linkify(text){
+  var escaped = esc(text);
+  var urlRe = /(https?:\/\/[^\s<]+)/g;
+  return escaped.replace(urlRe, function(url){
+    var trail = '';
+    var m = url.match(/[)\]},.!?]+$/);
+    if (m) { trail = m[0]; url = url.slice(0, -trail.length); }
+    return '<span class="embed">'
+      + '<img src="' + url + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'">'
+      + '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="embed-link" style="display:none">' + url + '</a>'
+      + '</span>' + trail;
+  });
+}
+
+function renderContent(text){
+  // split on fenced code blocks so links inside code aren't turned into image embeds
+  var parts = text.split(/(```[\s\S]*?```)/g);
+  return parts.map(function(part){
+    if (/^```[\s\S]*```$/.test(part)){
+      var inner = part.replace(/^```[^\n]*\n?/, '').replace(/```$/, '');
+      return '<code class="code-block">' + esc(inner) + '</code>';
+    }
+    return linkify(part);
+  }).join('');
+}
+
+/* ---------------- FEED ---------------- */
+
+async function fetchFeed(){
+  document.getElementById('feed').innerHTML = '<div id="feed-msg"><strong>loading...</strong></div>';
+  try{
+    var catFilter = categoryFilter ? ('&tags=cs.{' + encodeURIComponent(categoryFilter) + '}') : '';
+    var url = SB_URL + '/rest/v1/posts?select=*&order=created_at.desc&limit=150' + catFilter;
+    var r = await fetch(url, { headers: authHeaders() });
+    if (!r.ok) throw new Error(await r.text());
+    posts = await r.json();
+    renderFeed();
+    if (currentTab === 'trending') renderTrendingTags();
+  }catch(e){
+    document.getElementById('feed').innerHTML = '<div id="feed-msg"><strong>couldn\'t load feed</strong>' + esc(e.message) + '</div>';
+  }
+}
+
+async function runSearch(q, tag){
+  document.getElementById('feed').innerHTML = '<div id="feed-msg"><strong>searching...</strong></div>';
+  try{
+    var filter;
+    if (tag) filter = 'tags=cs.{' + encodeURIComponent(tag) + '}';
+    else filter = 'or=(content.ilike.*' + encodeURIComponent(q) + '*,tags.cs.{' + encodeURIComponent(q) + '})';
+    var url = SB_URL + '/rest/v1/posts?select=*&' + filter + '&order=created_at.desc&limit=100';
+    var r = await fetch(url, { headers: authHeaders() });
+    if (!r.ok) throw new Error(await r.text());
+    posts = await r.json();
+    renderFeed();
+  }catch(e){
+    document.getElementById('feed').innerHTML = '<div id="feed-msg"><strong>search failed</strong>' + esc(e.message) + '</div>';
+  }
+}
+
+function scoredForYou(list){
+  var now = Date.now();
+  var cookiePrefs = getPrefs().tags;
+  var acctPrefs = accountAffinity(list);
+  // combine both signals, cookie signal weighted a bit lighter than account history
+  var combined = {};
+  Object.keys(cookiePrefs).forEach(function(t){ combined[t] = (combined[t] || 0) + cookiePrefs[t] * 0.7; });
+  Object.keys(acctPrefs).forEach(function(t){ combined[t] = (combined[t] || 0) + acctPrefs[t] * 1.3; });
+  var maxAffinity = Object.keys(combined).reduce(function(m, k){ return Math.max(m, combined[k]); }, 0) || 1;
+
+  function score(p){
+    var h = (now - new Date(p.created_at).getTime()) / 3600000;
+    var base = (p.upvotes || 0) - h * 0.15;
+    var affinity = 0;
+    if (p.tags && p.tags.length){
+      for (var i = 0; i < p.tags.length; i++){ affinity += combined[p.tags[i]] || 0; }
+      affinity = (affinity / maxAffinity) * 4; // normalized boost, capped influence
+    }
+    return base + affinity;
+  }
+
+  return list.slice().sort(function(a, b){ return score(b) - score(a); });
+}
+
+function renderFeed(){
+  var list = posts;
+  if (!currentSearch && currentTab === 'fyp') list = scoredForYou(posts);
+  else if (!currentSearch && currentTab === 'trending') list = posts.slice().sort(function(a,b){ return (b.upvotes||0) - (a.upvotes||0); });
+
+  var feed = document.getElementById('feed');
+  if (!list.length){
+    feed.innerHTML = '<div id="feed-msg"><strong>' + (currentSearch ? 'no results' : 'nothing here yet') + '</strong>' + (!currentSearch ? 'ship the first post' : 'try a different search') + '</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < list.length; i++){
+    var p = list[i];
+    var voted = votedIds[p.id];
+    html += '<div class="post-card">';
+    html += '<div class="post-head"><span class="post-author">' + esc(p.author || 'anonymous') + '</span><span class="post-dot">·</span><span class="post-time">' + timeAgo(p.created_at) + '</span></div>';
+    html += '<div class="post-content">' + renderContent(p.content) + '</div>';
+    if (p.tags && p.tags.length){
+      html += '<div class="post-tags">';
+      for (var j = 0; j < p.tags.length; j++){
+        html += '<span class="post-tag" data-tag="' + esc(p.tags[j]) + '">#' + esc(p.tags[j]) + '</span>';
+      }
+      html += '</div>';
+    }
+    html += '<div class="post-actions">';
+    html += '<button class="upvote-btn' + (voted ? ' voted' : '') + '" data-id="' + p.id + '" title="' + (session ? (voted ? 'remove upvote' : 'upvote') : 'log in to upvote') + '">&#9650; ' + (p.upvotes || 0) + '</button>';
+    html += '<button class="copy-btn" data-copy="' + p.id + '">copy link</button>';
+    if (session && ((p.user_id && String(p.user_id).toLowerCase() === String(session.user.id).toLowerCase()) || isModerator())){
+      html += '<button class="delete-btn" data-delete="' + p.id + '">delete</button>';
+    }
+    html += '</div></div>';
+  }
+  feed.innerHTML = html;
+}
+
+document.getElementById('feed').addEventListener('click', function(e){
+  var tagEl = e.target.closest('.post-tag');
+  if (tagEl){
+    bumpPref([tagEl.getAttribute('data-tag')], 1);
+    switchTab('search');
+    document.getElementById('search-input').value = tagEl.getAttribute('data-tag');
+    setSearch(null, tagEl.getAttribute('data-tag'));
+    return;
+  }
+  var upBtn = e.target.closest('.upvote-btn');
+  if (upBtn){
+    if (!session){ openAuth('login'); return; }
+    var id = upBtn.getAttribute('data-id');
+    var votedPost = posts.find(function(x){ return x.id === id; });
+    if (votedPost && votedPost.tags) bumpPref(votedPost.tags, 3);
+    toggleVote(id, upBtn);
+    return;
+  }
+  var copyBtn = e.target.closest('.copy-btn');
+  if (copyBtn){
+    var pid = copyBtn.getAttribute('data-copy');
+    navigator.clipboard && navigator.clipboard.writeText(location.href.split('#')[0] + '#post-' + pid);
+    copyBtn.textContent = 'copied!';
+    setTimeout(function(){ copyBtn.textContent = 'copy link'; }, 1500);
+    return;
+  }
+  var delBtn = e.target.closest('.delete-btn');
+  if (delBtn){
+    deletePost(delBtn.getAttribute('data-delete'));
+  }
+});
+
+async function toggleVote(id, btn){
+  var wasVoted = !!votedIds[id];
+  var rpc = wasVoted ? 'decrement_upvotes' : 'increment_upvotes';
+  var countMatch = btn.textContent.match(/\d+/);
+  var n = countMatch ? parseInt(countMatch[0], 10) : 0;
+
+  votedIds[id] = !wasVoted;
+  btn.classList.toggle('voted', !wasVoted);
+  btn.innerHTML = '&#9650; ' + (wasVoted ? n - 1 : n + 1);
+
+  try{
+    var r = await fetch(SB_URL + '/rest/v1/rpc/' + rpc, {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ post_id: id })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    var p = posts.find(function(x){ return x.id === id; });
+    if (p) p.upvotes = wasVoted ? Math.max(0, (p.upvotes || 0) - 1) : (p.upvotes || 0) + 1;
+  }catch(e){
+    votedIds[id] = wasVoted;
+    btn.classList.toggle('voted', wasVoted);
+    btn.innerHTML = '&#9650; ' + n;
+    alert('vote failed: ' + e.message);
+  }
+}
+
+async function deletePost(id){
+  if (!confirm('delete this post?')) return;
+  try{
+    var r = await fetch(SB_URL + '/rest/v1/posts?id=eq.' + id, {
+      method: 'DELETE',
+      headers: authHeaders({ 'Content-Type': 'application/json' })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    posts = posts.filter(function(p){ return p.id !== id; });
+    renderFeed();
+  }catch(e){
+    alert('delete failed: ' + e.message);
+  }
+}
+
+/* ---------------- TABS ---------------- */
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('nav.tabs button').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+  });
+  document.getElementById('search-panel').classList.toggle('open', tab === 'search');
+  document.getElementById('category-bar').style.display = tab === 'search' ? 'none' : 'flex';
+  document.getElementById('trending-panel').classList.toggle('show', tab === 'trending');
+  if (tab === 'trending') renderTrendingTags();
+  if (tab === 'search'){
+    if (!currentSearch) { document.getElementById('feed').innerHTML = '<div id="feed-msg"><strong>search thrity forums</strong>type a keyword or #tag above</div>'; }
+    return;
+  }
+  currentSearch = null;
+  document.getElementById('search-active').classList.remove('show');
+  renderFeed();
+}
+
+function renderTrendingTags(){
+  var counts = {};
+  posts.forEach(function(p){
+    (p.tags || []).forEach(function(t){ counts[t] = (counts[t] || 0) + 1; });
+  });
+  var sorted = Object.keys(counts).sort(function(a, b){ return counts[b] - counts[a]; }).slice(0, 12);
+  var el = document.getElementById('trending-tags');
+  if (!sorted.length){ el.innerHTML = '<span class="composer-hint">no tags yet</span>'; return; }
+  el.innerHTML = sorted.map(function(t){
+    return '<button data-tag="' + esc(t) + '">#' + esc(t) + '<span class="tag-count">' + counts[t] + '</span></button>';
+  }).join('');
+}
+document.getElementById('trending-tags').addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-tag]');
+  if (!btn) return;
+  var tag = btn.getAttribute('data-tag');
+  bumpPref([tag], 1);
+  switchTab('search');
+  document.getElementById('search-input').value = tag;
+  setSearch(null, tag);
+});
+document.querySelectorAll('nav.tabs button').forEach(function(b){
+  b.addEventListener('click', function(){ switchTab(b.getAttribute('data-tab')); });
+});
+
+document.querySelectorAll('#category-bar button').forEach(function(b){
+  b.addEventListener('click', function(){
+    categoryFilter = b.getAttribute('data-cat');
+    document.querySelectorAll('#category-bar button').forEach(function(x){ x.classList.toggle('active', x === b); });
+    fetchFeed();
+  });
+});
+
+document.getElementById('quick-tags').addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-tag]');
+  if (btn) addTag(btn.getAttribute('data-tag'));
+});
+
+/* ---------------- SEARCH ---------------- */
+
+function setSearch(q, tag){
+  currentSearch = { q: q, tag: tag };
+  var label = tag ? ('#' + tag) : ('"' + q + '"');
+  document.getElementById('search-active-label').textContent = 'showing results for ' + label;
+  document.getElementById('search-active').classList.add('show');
+  runSearch(q, tag);
+}
+document.getElementById('search-btn').addEventListener('click', function(){
+  var q = document.getElementById('search-input').value.trim();
+  if (!q) return;
+  var tag = q.replace(/^#/, '');
+  if (q.charAt(0) === '#'){ bumpPref([tag], 1); setSearch(null, tag); }
+  else setSearch(q, null);
+});
+document.getElementById('search-input').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') document.getElementById('search-btn').click();
+});
+document.getElementById('search-clear').addEventListener('click', function(){
+  currentSearch = null;
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-active').classList.remove('show');
+  document.getElementById('feed').innerHTML = '<div id="feed-msg"><strong>search thrity forums</strong>type a keyword or #tag above</div>';
+});
+
+/* ---------------- COMPOSER ---------------- */
+
+var contentEl = document.getElementById('post-content');
+contentEl.addEventListener('focus', function(){ document.getElementById('composer').classList.add('expanded'); });
+contentEl.addEventListener('input', function(){
+  this.style.height = 'auto';
+  this.style.height = this.scrollHeight + 'px';
+});
+
+var tagInput = document.getElementById('tag-input');
+tagInput.addEventListener('keydown', function(e){
+  if ((e.key === 'Enter' || e.key === ',') && this.value.trim()){
+    e.preventDefault();
+    addTag(this.value.trim().replace(/^#/, '').replace(/,/g, ''));
+    this.value = '';
+  } else if (e.key === 'Backspace' && !this.value && tagsArr.length){
+    removeTag(tagsArr.length - 1);
+  }
+});
+function addTag(t){
+  if (!t || tagsArr.indexOf(t) !== -1 || tagsArr.length >= 10) return;
+  tagsArr.push(t);
+  bumpPref([t], 2);
+  renderTags();
+}
+function removeTag(i){
+  tagsArr.splice(i, 1);
+  renderTags();
+}
+function renderTags(){
+  var row = document.getElementById('tag-row');
+  var chips = tagsArr.map(function(t, i){
+    return '<span class="tag-chip">#' + esc(t) + '<button data-i="' + i + '">&#x2715;</button></span>';
+  }).join('');
+  row.innerHTML = chips + '<input type="text" id="tag-input" placeholder="add tags, press enter">';
+  tagInput = document.getElementById('tag-input');
+}
+document.getElementById('tag-row').addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-i]');
+  if (btn) removeTag(parseInt(btn.getAttribute('data-i'), 10));
+});
+document.getElementById('tag-row').addEventListener('keydown', function(e){
+  var target = e.target;
+  if (target.id !== 'tag-input') return;
+  if ((e.key === 'Enter' || e.key === ',') && target.value.trim()){
+    e.preventDefault();
+    addTag(target.value.trim().replace(/^#/, '').replace(/,/g, ''));
+    target.value = '';
+  } else if (e.key === 'Backspace' && !target.value && tagsArr.length){
+    removeTag(tagsArr.length - 1);
+  }
+});
+
+document.getElementById('post-btn').addEventListener('click', submitPost);
+
+async function submitPost(){
+  var content = contentEl.value.trim();
+  if (!content){ setPostStatus('write something first', 'err'); return; }
+  var authorInput = document.getElementById('author-input').value.trim();
+  var author = session ? (session.user.user_metadata.username || session.user.email) : (authorInput || 'anonymous');
+  var btn = document.getElementById('post-btn');
+  btn.disabled = true;
+  try{
+    var r = await fetch(SB_URL + '/rest/v1/posts', {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=representation' }),
+      body: JSON.stringify({ author: author, content: content, tags: tagsArr })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    setPostStatus('posted', 'ok');
+    contentEl.value = '';
+    contentEl.style.height = 'auto';
+    tagsArr = [];
+    renderTags();
+    document.getElementById('author-input').value = '';
+    document.getElementById('composer').classList.remove('expanded');
+    if (currentTab !== 'search') fetchFeed();
+  }catch(e){
+    setPostStatus('failed to post: ' + e.message, 'err');
+  }finally{
+    btn.disabled = false;
+  }
+}
+function setPostStatus(msg, cls){
+  var el = document.getElementById('post-status');
+  el.textContent = msg; el.className = cls || '';
+  setTimeout(function(){ el.textContent = ''; el.className = ''; }, 4000);
+}
+
+/* ---------------- AUTH ---------------- */
+
+var authMode = 'login';
+function openAuth(mode){
+  authMode = mode;
+  document.getElementById('auth-overlay').classList.add('open');
+  document.getElementById('auth-title').textContent = mode === 'login' ? 'Log in' : 'Sign up';
+  document.getElementById('auth-submit').textContent = mode === 'login' ? 'Log in' : 'Sign up';
+  document.getElementById('auth-username').style.display = mode === 'login' ? 'none' : 'block';
+  document.getElementById('auth-switch').innerHTML = mode === 'login'
+    ? 'No account? <a id="auth-switch-link">Sign up</a>'
+    : 'Already have one? <a id="auth-switch-link">Log in</a>';
+  document.getElementById('auth-switch-link').addEventListener('click', function(){
+    openAuth(mode === 'login' ? 'signup' : 'login');
+  });
+  document.getElementById('auth-status').textContent = '';
+  document.getElementById('auth-status').className = '';
+}
+document.getElementById('login-btn').addEventListener('click', function(){ openAuth('login'); });
+document.getElementById('signup-btn').addEventListener('click', function(){ openAuth('signup'); });
+document.getElementById('auth-close').addEventListener('click', function(){ document.getElementById('auth-overlay').classList.remove('open'); });
+document.getElementById('auth-overlay').addEventListener('click', function(e){ if (e.target === this) this.classList.remove('open'); });
+
+document.getElementById('auth-submit').addEventListener('click', async function(){
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value;
+  var username = document.getElementById('auth-username').value.trim();
+  var statusEl = document.getElementById('auth-status');
+  if (!email || !password){ statusEl.textContent = 'email and password required'; statusEl.className = 'err'; return; }
+  this.disabled = true;
+  try{
+    if (authMode === 'signup'){
+      if (!username){ throw new Error('pick a username'); }
+      var r = await fetch(SB_URL + '/auth/v1/signup', {
+        method: 'POST',
+        headers: { apikey: SB_ANON, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password, data: { username: username } })
+      });
+      var d = await r.json();
+      if (!r.ok) throw new Error(d.msg || d.error_description || 'sign up failed');
+      if (d.access_token){
+        session = { access_token: d.access_token, refresh_token: d.refresh_token, user: d.user };
+        saveSession();
+        onAuthed();
+      } else {
+        statusEl.textContent = 'check your email to confirm, then log in';
+        statusEl.className = 'ok';
+      }
+    } else {
+      var r2 = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        headers: { apikey: SB_ANON, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password })
+      });
+      var d2 = await r2.json();
+      if (!r2.ok) throw new Error(d2.msg || d2.error_description || 'login failed');
+      session = { access_token: d2.access_token, refresh_token: d2.refresh_token, user: d2.user };
+      saveSession();
+      onAuthed();
+    }
+  }catch(e){
+    statusEl.textContent = e.message;
+    statusEl.className = 'err';
+  }finally{
+    this.disabled = false;
+  }
+});
+
+function onAuthed(){
+  document.getElementById('auth-overlay').classList.remove('open');
+  document.getElementById('login-btn').style.display = 'none';
+  document.getElementById('signup-btn').style.display = 'none';
+  document.getElementById('user-chip').style.display = 'flex';
+  document.getElementById('user-name').textContent = session.user.user_metadata.username || session.user.email;
+  updateAvatarChip();
+  renderFeed();
+}
+function updateAvatarChip(){
+  var avatarEl = document.getElementById('user-avatar');
+  var url = session && session.user.user_metadata && session.user.user_metadata.avatar_url;
+  if (url){ avatarEl.src = url; avatarEl.style.display = 'inline-block'; }
+  else { avatarEl.style.display = 'none'; }
+}
+document.getElementById('logout-btn').addEventListener('click', function(){
+  session = null;
+  eraseCookie('kf_session');
+  document.getElementById('login-btn').style.display = 'inline-block';
+  document.getElementById('signup-btn').style.display = 'inline-block';
+  document.getElementById('user-chip').style.display = 'none';
+  document.getElementById('user-avatar').style.display = 'none';
+  renderFeed();
+});
+
+/* ---------------- PROFILE ---------------- */
+
+function openProfile(){
+  if (!session) return;
+  var meta = session.user.user_metadata || {};
+  document.getElementById('profile-username').value = meta.username || '';
+  document.getElementById('profile-avatar-url').value = meta.avatar_url || '';
+  document.getElementById('profile-bio').value = meta.bio || '';
+  document.getElementById('profile-avatar-preview').src = meta.avatar_url || '';
+  document.getElementById('profile-status').textContent = '';
+  document.getElementById('profile-status').className = '';
+  document.getElementById('profile-overlay').classList.add('open');
+}
+document.getElementById('profile-btn').addEventListener('click', openProfile);
+document.getElementById('profile-close').addEventListener('click', function(){
+  document.getElementById('profile-overlay').classList.remove('open');
+});
+document.getElementById('profile-overlay').addEventListener('click', function(e){
+  if (e.target === this) this.classList.remove('open');
+});
+document.getElementById('profile-avatar-url').addEventListener('input', function(){
+  document.getElementById('profile-avatar-preview').src = this.value.trim();
+});
+
+document.getElementById('profile-save').addEventListener('click', async function(){
+  if (!session) return;
+  var username = document.getElementById('profile-username').value.trim();
+  var avatarUrl = document.getElementById('profile-avatar-url').value.trim();
+  var bio = document.getElementById('profile-bio').value.trim();
+  var statusEl = document.getElementById('profile-status');
+  if (!username){ statusEl.textContent = 'pick a username'; statusEl.className = 'err'; return; }
+  this.disabled = true;
+  try{
+    var r = await fetch(SB_URL + '/auth/v1/user', {
+      method: 'PUT',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ data: { username: username, avatar_url: avatarUrl, bio: bio } })
+    });
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.msg || d.error_description || 'update failed');
+    session.user = d;
+    saveSession();
+    document.getElementById('user-name').textContent = username || session.user.email;
+    updateAvatarChip();
+    statusEl.textContent = 'saved'; statusEl.className = 'ok';
+    setTimeout(function(){ document.getElementById('profile-overlay').classList.remove('open'); }, 700);
+  }catch(e){
+    statusEl.textContent = e.message; statusEl.className = 'err';
+  }finally{
+    this.disabled = false;
+  }
+});
+
+/* ---------------- INIT ---------------- */
+restoreSession();
+fetchFeed();
+</script>
 </body>
 </html>
